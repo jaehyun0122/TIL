@@ -71,7 +71,9 @@ getTotalPages : 2
 
 ## 2. queryMethod 활용해보기
 
-### jpa application.yml setting 
+https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods
+
+### 1) jpa application.yml setting 
 
 ```
 spring:
@@ -106,3 +108,145 @@ logging:
 
 
 
+### 2) 정렬
+
+```
+List<User> findFirstByNameOrderByIdDesc(String name);
+```
+
+```
+userRepository.findFirstByNameOrderByIdDesc("test"));
+```
+
+결과
+
+```
+Hibernate: 
+    select
+        user0_.id as id1_0_,
+        user0_.created_at as created_2_0_,
+        user0_.email as email3_0_,
+        user0_.name as name4_0_,
+        user0_.updated_at as updated_5_0_ 
+    from
+        user user0_ 
+    where
+        user0_.name=? 
+    order by
+        user0_.id desc limit ?
+        
+ [User(id=1, name=test, email=test@test, createdAt=2022-03-03T23:08:58, updatedAt=2022-03-03T23:08:58)]
+```
+
+#### 여러 조건으로 정렬을 하게되면 함수명이 길어져 가독성이 떨어질 수 있다.
+
+```
+List<User> findFirstByName(String name, Sort sort);
+```
+
+```
+System.out.println(userRepository.findFirstByName("test", Sort.by(Sort.Order.desc("id"), Sort.Order.asc("email"))));;
+```
+
+결과
+
+```
+Hibernate: 
+    select
+        user0_.id as id1_0_,
+        user0_.created_at as created_2_0_,
+        user0_.email as email3_0_,
+        user0_.name as name4_0_,
+        user0_.updated_at as updated_5_0_ 
+    from
+        user user0_ 
+    where
+        user0_.name=? 
+    order by
+        user0_.id desc,
+        user0_.email asc limit ?
+        
+[User(id=1, name=test, email=test@test, createdAt=2022-03-03T23:08:58, updatedAt=2022-03-03T23:08:58)]
+```
+
+> Sort.Order를 통해 인자값을 넘겨주면 여러가지 조건으로 정렬을 할 수 있다.
+>
+> 또는 동일한 조건으로 여러 코드를 수행하면 Sort 클래스를 만들어 줄 수도 있다
+
+```
+private Sort getSort(){
+        return Sort.by(
+            Sort.Order.asc("id"),
+            Sort.Order.desc("name"),
+            Sort.Order.desc("createdAt")
+        );
+    }
+```
+
+### 3) 페이징 처리
+
+```
+    // Page : 응답값,  Pageable : 요청값
+    Page<User> findByName(String name, Pageable pageable);
+```
+
+```
+System.out.println(userRepository.findByName("test",PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
+```
+
+결과
+
+```
+Hibernate: 
+    select
+        user0_.id as id1_0_,
+        user0_.created_at as created_2_0_,
+        user0_.email as email3_0_,
+        user0_.name as name4_0_,
+        user0_.updated_at as updated_5_0_ 
+    from
+        user user0_ 
+    where
+        user0_.name=? 
+    order by
+        user0_.id desc limit ?
+        
+        
+        
+        Hibernate: 
+    select
+        count(user0_.id) as col_0_0_ 
+    from
+        user user0_ 
+    where
+        user0_.name=?
+        
+        
+    [User(id=1, name=test, email=test@test, createdAt=2022-03-03T23:08:58, updatedAt=2022-03-03T23:08:58)]
+```
+
+> 사이즈에 맞게 결과를 가져온다.
+
+
+
+### 4) Entity 속성
+
+1. @Column
+
+@Column(updatable = false)
+
+@Conlumn(insertable = false)
+
+insert, update시 변경되지 않는다.
+
+
+
+2. enum
+
+
+
+3. native qeury
+
+@Query(vale="", native = true)
+
+value의 쿼리문이 실행된다.
