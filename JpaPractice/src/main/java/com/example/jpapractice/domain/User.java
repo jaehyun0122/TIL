@@ -30,6 +30,4 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public User(String no, String s) {
-    }
 }

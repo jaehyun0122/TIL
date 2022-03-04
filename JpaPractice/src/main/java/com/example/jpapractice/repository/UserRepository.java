@@ -1,7 +1,11 @@
 package com.example.jpapractice.repository;
 
 import com.example.jpapractice.domain.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -20,5 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByNameStartingWith(String start);
     List<User> findByNameEndingWith(String end);
     List<User> findByNameContains(String str);
+    List<User> findFirstByNameOrderByIdDesc(String name);
+    List<User> findFirstByName(String name, Sort sort);
 
+    // Page : 응답값,  Pageable : 요청값
+    Page<User> findByName(String name, Pageable pageable);
 }
