@@ -241,11 +241,7 @@ insert, update시 변경되지 않는다.
 
 
 
-2. enum
-
-
-
-3. native qeury
+2. native qeury
 
 @Query(vale="", native = true)
 
