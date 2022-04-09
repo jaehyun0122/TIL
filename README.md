@@ -233,11 +233,12 @@ Hibernate:
 
 1. @Column
 
-@Column(updatable = false)
-
-@Conlumn(insertable = false)
+- @Column(updatable = false)
+- @Conlumn(insertable = false)
 
 insert, update시 변경되지 않는다.
+
+- nullable : default = true
 
 
 
@@ -246,3 +247,45 @@ insert, update시 변경되지 않는다.
 @Query(vale="", native = true)
 
 value의 쿼리문이 실행된다.
+
+
+
+3. @GeneratedValue
+
+TABLE : DB종류에 상관없이 id를 관리하는 별도의 테이블 만들어서 제공
+
+SEQUENCE 
+
+IDENTITY 
+
+AUTO : default값
+
+
+
+4. @Table
+
+기본이름은 class이름으로 지정된다
+
+@Table(name = "user_table") => table이름을 지정해 줄 수 있다.
+
+```
+@Table(name = "user", indexes = {@Index(columnList = "name")}, uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+```
+
+위와 같이 Index나 제약조건을 걸어 줄  수도 있다.
+
+=> DB에 Index나 제약사항이 없는데 jpa에서 지정해주면 동작하지 않는다. 그래서 Index나 제약사항같은 경우는 DB에 맞기는 부분이 많다고 한다.
+
+
+
+5. @Transient
+
+영속성 처리에서 제외. DB에 반영하지 않고 객체에서 따로 사용할 경우.
+
+
+
+6. @Enumerated
+
+enum을 사용하는 컬럼의 경우 반드시 @Enumerated(value = EnumType.STRING)을 해줘야한다.
+
+=> 안해주면 default가 ORDINAL이기 때문에 순서값이 저장되게 된다.

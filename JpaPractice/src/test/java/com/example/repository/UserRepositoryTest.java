@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import com.example.jpapractice.JpaPracticeApplication;
+import com.example.jpapractice.domain.Gender;
 import com.example.jpapractice.domain.User;
 import com.example.jpapractice.repository.UserRepository;
 import org.hibernate.criterion.Order;
@@ -50,5 +51,15 @@ class UserRepositoryTest {
             Sort.Order.desc("name"),
             Sort.Order.desc("createdAt")
         );
+    }
+    @Test
+    void enumTest(){
+        User user = new User();
+        user.setGender(Gender.MALE);
+        user.setName("dfsf");
+        user.setEmail("dfsaf");
+        userRepository.save(user);
+
+        userRepository.findAll().forEach(System.out::println);
     }
 }
