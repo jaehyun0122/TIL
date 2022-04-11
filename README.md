@@ -289,3 +289,98 @@ AUTO : default값
 enum을 사용하는 컬럼의 경우 반드시 @Enumerated(value = EnumType.STRING)을 해줘야한다.
 
 => 안해주면 default가 ORDINAL이기 때문에 순서값이 저장되게 된다.
+
+
+
+### 3. Entity Listener
+
+1. PrePersist : insert 동작전
+2. PreUpdate : update 전
+3. PreRemove : delete 전
+4. PostPersist : insert 후
+5. PostUpdate : update 후
+6. PostRemove : delete 후
+7. PostLoad : select 후
+
+=> PrePersist, PreUpdate를 많이 쓴다. 
+
+예를 들어 유저 정보는 중요한 정보이다. 유저 정보의 생성시간이나 업데이트시간들은 반복되는 작업이기 때문에 객체 생성시 지정해 주지 않고
+
+1. PrePersist나 PreUpdate로 설정하면 개발자의 실수도 줄일 수 있다.
+
+```
+    @prePersist
+    private void PrePersist(){
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @preUpdate
+    private void PreUpdate(){
+        this.updatedAt = LocalDateTime.now();
+    }
+```
+
+
+
+2. class를 만들어 Listener설정
+
+```
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@EntityListeners(value = MyEntityListener.class) => EntityListeners 어노테이션
+@Data
+@Table(name = "user")
+public class User implements Common{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
+
+    @NotNull
+    private String name;
+
+    @NotNull
+    private String email;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}
+
+```
+
+```
+package com.example.jpapractice.domain;
+
+import java.time.LocalDateTime;
+
+public interface Common {
+    LocalDateTime getCreatedAt();
+    LocalDateTime getUpdatedAt();
+
+    void setCreatedAt(LocalDateTime createdAt);
+    void setUpdatedAt(LocalDateTime updateedAt);
+}
+
+```
+
+```
+package com.example.jpapractice.domain;
+
+import javax.persistence.PrePersist;
+import java.time.LocalDateTime;
+
+public class MyEntityListener {
+    @PrePersist
+    public void prePersist(Object o){
+        if(o instanceof Common){
+            ((Common) o).setCreatedAt(LocalDateTime.now());
+        }
+    }
+}
+
+```
+

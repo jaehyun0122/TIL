@@ -4,6 +4,7 @@ import com.example.jpapractice.JpaPracticeApplication;
 import com.example.jpapractice.domain.Gender;
 import com.example.jpapractice.domain.User;
 import com.example.jpapractice.repository.UserRepository;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.hibernate.criterion.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +46,13 @@ class UserRepositoryTest {
 //        System.out.println(userRepository.findFirstByName("test", Sort.by(Sort.Order.desc("id"), Sort.Order.asc("email"))));;
         System.out.println(userRepository.findByName("test",PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
     }
-    private Sort getSort(){
-        return Sort.by(
-            Sort.Order.asc("id"),
-            Sort.Order.desc("name"),
-            Sort.Order.desc("createdAt")
-        );
-    }
+//    private Sort getSort(){
+//        return Sort.by(
+//            Sort.Order.asc("id"),
+//            Sort.Order.desc("name"),
+//            Sort.Order.desc("createdAt")
+//        );
+//    }
     @Test
     void enumTest(){
         User user = new User();
@@ -59,7 +60,8 @@ class UserRepositoryTest {
         user.setName("dfsf");
         user.setEmail("dfsaf");
         userRepository.save(user);
+        System.out.println("test"+userRepository.findByName("dfsf"));
 
-        userRepository.findAll().forEach(System.out::println);
+
     }
 }
