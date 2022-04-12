@@ -392,7 +392,7 @@ ERD 설계 시 draw.io활용
 
 https://www.draw.io
 
-![jpaERd](C:\Users\multicampus\Desktop\github\JPA\readmeAsset\jpaERd.PNG)
+![jpaERd](https://github.com/jaehyun0122/Jpa_practice/blob/master/readmeAsset/jpaERd.PNG)
 
 1. 1:1 연관관계
 
