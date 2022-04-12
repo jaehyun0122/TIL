@@ -7,5 +7,5 @@ public interface Common {
     LocalDateTime getUpdatedAt();
 
     void setCreatedAt(LocalDateTime createdAt);
-    void setUpdatedAt(LocalDateTime updateedAt);
+    void setUpdatedAt(LocalDateTime updatedAt);
 }
