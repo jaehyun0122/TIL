@@ -703,7 +703,7 @@ public class Book implements Common{
 
  java.lang.StackOverflowError
 
-![순환참조](C:\Users\multicampus\Downloads\순환참조.png)
+![순환참조](https://github.com/jaehyun0122/Jpa_practice/blob/master/readmeAsset/%EC%88%9C%ED%99%98%EC%B0%B8%EC%A1%B0.png)
 
 => Entity 리레이션을 사용하는 경우 toString Method가 순환 참조가 걸린다. 제외 처리가 필요 => @ToString.Exclude
 
