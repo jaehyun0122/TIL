@@ -540,7 +540,7 @@ Result>>>Book(super=com.example.jpapractice.domain.Book@ad4d0dfb, id=1, name=Boo
 
 private Long BookId => 
 
-@OneToOne(optional = false)
+1. @OneToOne(optional = false)
 
 private Book book;
 
@@ -762,5 +762,21 @@ public class BookReviewInfo {
     )
 ```
 
-=> book_review_info테이블에는 book_id가 존재 하고
+=> book_review_info테이블에는 book_id가 존재 한다
 
+
+
+2. 1 : N 연관관계 (User - UserHistory)
+
+   User Entity
+
+```mysql
+    @OneToMany(fetch = FetchType.EAGER)
+    // insertable , updatable 유저 테이블에서는 삽입, 수정하지 않도록
+    @JoinColumn(name = "user_id", insertable = false, updatable = false) // 어노테이션 없으면 user_user_histories 테이블이 하나 생김
+    private List<UserHistory> userHistories = new ArrayList<>(); // null exception 발생하지 않도록 기본 생성자
+```
+
+=> JPA는 쿼리를 자동으로 실행하기 때문에 개발자가 모르는 사이에 불필요한 쿼리들을 남발 할 수 있다.
+
+그래서 설정들을 통해 최적의 쿼리를 사용하도록 해줘야 한다.

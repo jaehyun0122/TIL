@@ -1,4 +1,4 @@
-package com.example.jpapractice.domain;
+package com.example.jpapractice.domain.listener;
 
 import java.time.LocalDateTime;
 

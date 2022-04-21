@@ -1,5 +1,6 @@
 package com.example.jpapractice.domain;
 
+import com.example.jpapractice.domain.listener.Common;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Data
-public class Book implements Common{
+public class Book implements Common {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

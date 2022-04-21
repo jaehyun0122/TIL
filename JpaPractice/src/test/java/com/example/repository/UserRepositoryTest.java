@@ -3,6 +3,7 @@ package com.example.repository;
 import com.example.jpapractice.JpaPracticeApplication;
 import com.example.jpapractice.domain.Gender;
 import com.example.jpapractice.domain.User;
+import com.example.jpapractice.repository.UserHistoryRepository;
 import com.example.jpapractice.repository.UserRepository;
 import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.hibernate.criterion.Order;
@@ -21,6 +22,8 @@ class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserHistoryRepository userHistoryRepository;
 
     @Test
     @Rollback(value = false)
@@ -73,6 +76,13 @@ class UserRepositoryTest {
 
         userRepository.save(user);
 
-        userRepository.findAll().forEach(System.out::println);
+        user.setName("Via");
+
+        userRepository.save(user);
+
+        user.setEmail("via@naver.com");
+        userRepository.save(user);
+
+        userHistoryRepository.findAll().forEach(System.out::println);
     }
 }
