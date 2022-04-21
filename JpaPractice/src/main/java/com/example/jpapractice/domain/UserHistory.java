@@ -2,32 +2,27 @@ package com.example.jpapractice.domain;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
 @Data
-public class Book implements Common{
+public class UserHistory implements Common{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long userId;
+
     private String name;
 
-    private String category;
-
-    private Long authorId;
-
-    private Long publisherId;
-
-    @OneToOne(mappedBy = "book")
-    @ToString.Exclude
-    private BookReviewInfo bookReviewInfo;
+    private String email;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 }

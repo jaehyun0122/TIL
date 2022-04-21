@@ -62,6 +62,17 @@ class UserRepositoryTest {
         userRepository.save(user);
         System.out.println("test"+userRepository.findByName("dfsf"));
 
+    }
 
+    @Test
+    void userRelationTest(){
+        User user = new User();
+        user.setName("David");
+        user.setEmail("David@naver.com");
+        user.setGender(Gender.MALE);
+
+        userRepository.save(user);
+
+        userRepository.findAll().forEach(System.out::println);
     }
 }
