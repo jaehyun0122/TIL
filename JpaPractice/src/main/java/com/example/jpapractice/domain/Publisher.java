@@ -3,30 +3,26 @@ package com.example.jpapractice.domain;
 import com.example.jpapractice.domain.listener.Common;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @Data
-public class UserHistory implements Common {
+public class Publisher implements Common {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private Long userId;
-
     private String name;
 
-    private String email;
+    @OneToMany
+    @JoinColumn(name = "publisher_id")
+    private List<Book> books = new ArrayList<>();
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    @ManyToOne
-    @ToString.Exclude
-    private User user;
 }

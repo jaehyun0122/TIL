@@ -3,7 +3,6 @@ package com.example.jpapractice.domain;
 import com.example.jpapractice.domain.listener.Common;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,22 +10,21 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @Data
-public class UserHistory implements Common {
+public class Review implements Common {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    private Long userId;
-
-    private String name;
-
-    private String email;
+    private String title;
+    private String content;
+    private float score;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @ToString.Exclude
     private User user;
+
+    @ManyToOne
+    private Book book;
 }

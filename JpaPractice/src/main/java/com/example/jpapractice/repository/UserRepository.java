@@ -15,6 +15,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findAllByName(String name);
     User findByEmailAndName(String email, String name);
+    User findByEmail(String email);
     List<User> findByNameOrEmail(String name, String email);
     List<User> findByIdAfter(Long id);
     List<User> findByCreatedAtGreaterThan(LocalDateTime yesterday);

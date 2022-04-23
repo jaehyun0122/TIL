@@ -1,11 +1,12 @@
 package com.example.jpapractice.domain;
 
 import com.example.jpapractice.JpaPracticeApplication;
-import com.example.jpapractice.repository.BookRespository;
-import com.example.jpapractice.repository.BookReviewRepository;
+import com.example.jpapractice.repository.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.transaction.Transactional;
 
 @SpringBootTest(classes = JpaPracticeApplication.class)
 class BookTest {
@@ -14,13 +15,18 @@ class BookTest {
     private BookRespository bookRespository;
     @Autowired
     private BookReviewRepository bookReviewRepository;
+    @Autowired
+    private PublisherRepository publisherRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void bookTest(){
         Book book = new Book();
         book.setName("BookName");
         book.setAuthorId(1L);
-        book.setPublisherId(1L);
 
         bookRespository.save(book);
 
@@ -41,5 +47,50 @@ class BookTest {
                         .getBook();
 
         System.out.println("Result>>>"+result);
+    }
+
+    @Test
+    @Transactional
+    void bookRelation(){
+        insertBookAndReview();
+
+        User user = userRepository.findByEmail("test@naver.com");
+
+        System.out.println("Review : "+user.getReviews());
+        System.out.println("Book : "+user.getReviews().get(0).getBook());
+        System.out.println("Publisher : "+user.getReviews().get(0).getBook().getPublisher());
+    }
+    private void insertBookAndReview(){
+        insertReview(insertUser(), insertBook(insertPublisher()));
+    }
+
+    private User insertUser(){
+        return userRepository.findByEmail("test@naver.com");
+    }
+
+    private Book insertBook(Publisher publisher){
+        Book book = new Book();
+        book.setName("jap practice");
+        book.setPublisher(publisher);
+
+        return bookRespository.save(book);
+    }
+
+    private void insertReview(User user, Book book){
+        Review review = new Review();
+        review.setTitle("자바 마스터 하기");
+        review.setContent("유용하네요");
+        review.setScore(5.0f);
+        review.setUser(user);
+        review.setBook(book);
+
+        reviewRepository.save(review);
+    }
+
+    private Publisher insertPublisher(){
+        Publisher publisher = new Publisher();
+        publisher.setName("출판사 이름");
+
+        return publisherRepository.save(publisher);
     }
 }
