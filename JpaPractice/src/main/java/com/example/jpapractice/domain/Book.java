@@ -38,7 +38,19 @@ public class Book implements Common {
     @ToString.Exclude
     private Publisher publisher;
 
+    @ManyToMany
+    @ToString.Exclude
+    private List<Author> authors = new ArrayList<>();
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void addAuthor(Author... author){
+        if(author != null){
+            for(Author author1 : author){
+                this.authors.add(author1);
+            }
+        }
+    }
 
 }

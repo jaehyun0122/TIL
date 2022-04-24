@@ -777,6 +777,33 @@ public class BookReviewInfo {
     private List<UserHistory> userHistories = new ArrayList<>(); // null exception 발생하지 않도록 기본 생성자
 ```
 
-=> JPA는 쿼리를 자동으로 실행하기 때문에 개발자가 모르는 사이에 불필요한 쿼리들을 남발 할 수 있다.
+### => JPA는 쿼리를 자동으로 실행하기 때문에 개발자가 모르는 사이에 불필요한 쿼리들을 남발 할 수 있다.
 
-그래서 설정들을 통해 최적의 쿼리를 사용하도록 해줘야 한다.
+### 그래서 설정들을 통해 최적의 쿼리를 사용하도록 해줘야 한다.
+
+
+
+ 3.  N : 1 연관관계
+
+ 4.  M : N 연관관계
+
+     실무 현업에서 거의 사용되지 않는다.
+
+     ManyToMany연관관계에서는 하나의 중계 테이블이 생기게 된다.
+
+     ```
+     Hibernate: 
+         
+         create table author_books (
+            author_id bigint not null,
+             books_id bigint not null
+         ) engine=InnoDB
+     Hibernate: 
+         
+         create table book_authors (
+            book_id bigint not null,
+             authors_id bigint not null
+         ) engine=InnoDB
+     ```
+
+     ​
