@@ -135,6 +135,7 @@ spring:
 
    import lombok.Getter;
    import lombok.Setter;
+   ```
 
 
    @Getter
@@ -192,11 +193,9 @@ spring:
    ```
        @Autowired
        private UserRepo userRepo;
-
+    
        @PostMapping("")
        public ResponseEntity<User> insertCharInfo(HttpServletRequest req, HttpServletResponse res, @RequestBody User user){
-           System.out.println("res : "+res);
-           System.out.println("req : "+req);
            System.out.println("user : " + user);
            userRepo.save(user);
            return new ResponseEntity<>(user, HttpStatus.OK);
@@ -207,7 +206,7 @@ spring:
 
 4. Mongo DB Compass 확인
 
-```
+   ```
 
 _id
 "jjh122@naver.com"
@@ -235,3 +234,5 @@ _class
 
 ```
 
+
+```
