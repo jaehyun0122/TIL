@@ -135,32 +135,29 @@ spring:
 
    import lombok.Getter;
    import lombok.Setter;
+      @Getter
+      @Setter
+      public class Blendshapes {
+
+      private String blendshapeName;
+      private int type;
+      private int group;
+      private float value;
+
+      }
    ```
 
 
-   @Getter
-   @Setter
-   public class Blendshapes {
-
-       private String blendshapeName;
-       private int type;
-       private int group;
-       private float value;
-
-   }
-
-   ```
-
-   ```
-   package com.example.mongodbwithreact.api.dto;
-
-   import lombok.Getter;
-   import lombok.Setter;
-
-   @Getter
-   @Setter
-   public class SelectedElements {
-       private int Hair;
+    
+    package com.example.mongodbwithreact.api.dto;
+    
+    import lombok.Getter;
+    import lombok.Setter;
+    
+    @Getter
+    @Setter
+       public class SelectedElements {
+    	private int Hair;
        private int Beard;
        private int Hat;
        private int Shirt;
@@ -168,29 +165,20 @@ spring:
        private int Shoes;
        private int Accessory;
        private int Item1;
-   }
-
-   ```
-
-   ​
-
+       }
 2. repository에서 MongoRepostitory 상속
 
    ```
-   package com.example.mongodbwithreact.api.repo;
+package com.example.mongodbwithreact.api.repo;
 
-   import com.example.mongodbwithreact.api.dto.User;
-   import org.springframework.data.mongodb.repository.MongoRepository;
+import com.example.mongodbwithreact.api.dto.User;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-   public interface UserRepo extends MongoRepository<User, String> {
-   }
+public interface UserRepo extends MongoRepository<User, String> {
+  }
    ```
-
-   ​
-
 3. controller에서 데이터를 받고 db에 저장수행
 
-   ```
        @Autowired
        private UserRepo userRepo;
     
@@ -200,14 +188,9 @@ spring:
            userRepo.save(user);
            return new ResponseEntity<>(user, HttpStatus.OK);
        }
-   ```
-
-   ​
-
 4. Mongo DB Compass 확인
 
    ```
-
 _id
 "jjh122@naver.com"
 settingsName
@@ -231,8 +214,5 @@ HeadSize
 0
 _class
 "com.example.mongodbwithreact.api.dto.User"
+   ```
 
-```
-
-
-```
