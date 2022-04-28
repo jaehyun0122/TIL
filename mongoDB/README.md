@@ -149,7 +149,7 @@ spring:
 
 
 
-
+```
 
     package com.example.mongodbwithreact.api.dto;
     import lombok.Getter;
@@ -167,6 +167,7 @@ spring:
        private int Accessory;
        private int Item1;
        }
+ ```
 2. repository에서 MongoRepostitory 상속
 
    ```
