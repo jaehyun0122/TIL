@@ -195,8 +195,7 @@ spring:
 
    ```
 4. Mongo DB Compass 확인
-
-   ```
+ ```
 _id
 "jjh122@naver.com"
 settingsName
@@ -220,5 +219,4 @@ HeadSize
 0
 _class
 "com.example.mongodbwithreact.api.dto.User"
-
-   ```
+ ```
