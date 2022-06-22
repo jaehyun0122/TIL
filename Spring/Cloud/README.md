@@ -154,4 +154,123 @@ https://engineering.linecorp.com/ko/blog/line-manga-database
 | 123e | 20220621 |
 
 ​													=>  DB  DB  DB 샤딩키 기준으로 분산 저장
+## 쓰기 요청 분산
 
+동영상 업로드                                                                 
+
+​										=> api server
+
+이미지, 게시글 조회
+
+---
+
+동영상 업로드				=> upload server		
+
+​										=> api server
+
+이미지, 게시글 조회
+
+
+
+- 폴링
+- callback event
+
+### EventListener 
+
+- ### spring Event 사용
+
+```
+package com.example.eventapp.storage;
+
+import com.example.eventapp.event.FileEvent;
+import com.example.eventapp.event.FileEventPublisher;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+@Slf4j
+@Service
+public class FileService {
+    @Autowired
+    private FileEventPublisher fileEventPublisher;
+
+    public void fileUpload(Map<String, Object> data){
+        try{
+          log.info("파일 복사 완료");
+          log.info("DB 저장 완료");
+
+            FileEvent completeEvent = FileEvent.completeEvent(data);
+            fileEventPublisher.notifyComplete(completeEvent);
+        } catch (Exception e){
+            log.error("file upload fail", e);
+            FileEvent errorEvent = FileEvent.errorEvent(data);
+            fileEventPublisher.notifyError(errorEvent);
+        }
+    }
+
+}
+```
+
+=> service에서 데이터를 받아 이벤트를 날려준다
+
+```
+package com.example.eventapp.event;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
+
+@Component
+public class FileEventPublisher {
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    public void notifyComplete(FileEvent fileEvent){
+        applicationEventPublisher.publishEvent(fileEvent);
+    }
+
+    public void notifyError(FileEvent fileEvent){
+        applicationEventPublisher.publishEvent(fileEvent);
+    }
+}
+```
+
+=> ApplicationEventPublisher를 사용하면 이벤트 감지 가능
+
+```
+package com.example.eventapp.event;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+public class FileEventListenr {
+    @EventListener
+    public void onFileEventHandler(FileEvent fileEvent){
+        log.info("file event receice type:{} data:{}",fileEvent.getType(), fileEvent.getData());
+        
+        if(fileEvent.getType().equals("COMPLETE")){
+        	...
+        }
+    }
+}
+
+```
+
+=> 조건문을 사용해 여러가지 기능(메시지 전송, ...)을 제공할 수 있다.
+
+```
+2022-06-22 13:25:35.428  INFO 15576 --- [nio-8080-exec-1] c.example.eventapp.storage.FileService   : 파일 복사 완료
+2022-06-22 13:25:35.429  INFO 15576 --- [nio-8080-exec-1] c.example.eventapp.storage.FileService   : DB 저장 완료
+2022-06-22 13:25:35.432  INFO 15576 --- [nio-8080-exec-1] c.e.eventapp.event.FileEventListenr      : file event receice type:COMPLETE data:{fileSize=10, id=jeong, type=web}
+```
+
+- ### 메시지 큐 사용
+
+  #### 분산 환경에서 메시지를 효율적으로 처리하기 위해 사용
+
+  
