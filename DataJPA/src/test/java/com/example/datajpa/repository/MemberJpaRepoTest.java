@@ -30,4 +30,26 @@ class MemberJpaRepoTest {
         Assertions.assertThat(findMember.getUsername()).isEqualTo(saveMember.getUsername());
     }
 
+    @Test
+    public void crud(){
+        Member member1 = new Member("member1");
+        Member member2 = new Member("member2");
+        memberJpaRepo.save(member1);
+        memberJpaRepo.save(member2);
+
+        Member findMember1 = memberJpaRepo.findById(member1.getId()).get();
+        Member findMember2 = memberJpaRepo.findById(member2.getId()).get();
+
+        Assertions.assertThat(findMember1).isEqualTo(member1);
+        Assertions.assertThat(findMember2).isEqualTo(member2);
+
+        long countMember = memberJpaRepo.count();
+        Assertions.assertThat(countMember).isEqualTo(2);
+
+        memberJpaRepo.delete(member1);
+        memberJpaRepo.delete(member2);
+        long deleteCount = memberJpaRepo.count();
+        Assertions.assertThat(deleteCount).isEqualTo(0);
+    }
+
 }
