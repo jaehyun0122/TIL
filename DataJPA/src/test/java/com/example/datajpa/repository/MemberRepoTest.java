@@ -1,6 +1,7 @@
 package com.example.datajpa.repository;
 
 import com.example.datajpa.entity.Member;
+import com.example.datajpa.entity.Team;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,9 @@ class MemberRepoTest {
 
     @Test
     public void testMember(){
-        Member member = new Member();
-        member.setUsername("member1");
+        Team team = new Team("team1");
+        Member member = new Member("member1", 20, team);
+
 
         Member saveMember = memberRepo.save(member);
 
