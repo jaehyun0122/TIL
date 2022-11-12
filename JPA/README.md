@@ -1,4 +1,7 @@
+참조 [김영한_자바 ORM 표준 JPA 프로그래밍 - 기본편](https://www.inflearn.com/course/ORM-JPA-Basic/dashboard)
+
 ## 객체지향 언어
+
 어플리케이션 ( 객체지향 언어 ) : 자바, 스칼라, ...
 데이터베이스 ( 관계형 ) : MySql, Oracle, ...
 
@@ -18,7 +21,8 @@
         }
         
         insert into Member values(...);
-        
+  
+
  => 만약 Member 필드가 변경되면 SQL까지 전부 변경해야한다.
  => SQL 중심적인 개발을 피하기 힘듬.
 ### 2. 객체 신뢰 문제
@@ -351,9 +355,9 @@ em.persist(member);
 |Team team|List members|
 |name|name|
 |N|1|
-Member와 Team 양방향 연관관계 설정 시 탐색 가능.
-테이블은 FK로 두 테이블 연관관계를 관리할 수 있다.
-**객체의 경우 둘 중 하나로 외래 키를 관리해야 함**.
+- Member와 Team 양방향 연관관계 설정 시 탐색 가능.
+- 테이블은 FK로 두 테이블 연관관계를 관리할 수 있다.
+- **객체의 경우 둘 중 하나로 외래 키를 관리해야 함**.
 - 객체 하나를 주인으로 지정
 - 주인만이 외래 키 관리 => 주인은 외래 키가 있는 곳으로 지정
 - 주인이 아닌 경우 읽기만 가능 => mappedBy로 주인을 지정
@@ -405,7 +409,90 @@ public class Member {
 JPQL에서 역방향으로 탐색할 일이 많음.
 단방향 매핑을 하고 필요 시 양방향으로.
 
---- 
+### fetch
+
+Eager vs Lazy
+
+**Entity**
+
+```
+public class Member {
+
+    @Id @GeneratedValue
+    @Column(name = "member_id")
+    private Long id;
+    private String username;
+    private int age;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+}
+
+public class Team {
+
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+
+    @OneToMany(mappedBy = "team")
+    private List<Member> members = new ArrayList<>();
+}
+```
+
+
+
+1. Eager 
+
+   - 데이터 조회 시 연관된 데이터도 같이 조회
+
+   ```
+   2022-11-12 22:02:20.763 DEBUG 15016 --- [           main] org.hibernate.SQL                        : 
+       select
+           member0_.member_id as member_i1_1_,
+           member0_.age as age2_1_,
+           member0_.team_id as team_id4_1_,
+           member0_.username as username3_1_ 
+       from
+           member member0_
+           
+   2022-11-12 22:02:20.801 DEBUG 15016 --- [           main] org.hibernate.SQL                        : 
+       select
+           team0_.id as id1_2_0_,
+           team0_.name as name2_2_0_ 
+       from
+           team team0_ 
+       where
+           team0_.id=?
+   ```
+
+   => Member 조회 시 team도 같이 조회
+
+2. Lazy
+
+   - 지연 로딩
+   - 연관된 데이터를 지정해서 조회 할 때
+
+```
+2022-11-12 22:05:32.281 DEBUG 19940 --- [           main] org.hibernate.SQL                        : 
+    select
+        member0_.member_id as member_i1_1_,
+        member0_.age as age2_1_,
+        member0_.team_id as team_id4_1_,
+        member0_.username as username3_1_ 
+    from
+        member member0_
+```
+
+=> Member만 조회
+
+
+
+**Member 조회 시 연관 데이터가 많아 질 때 수 많은 쿼리가 실행되므로 기본적으로 지연로딩을 사용**
+
+
+
+---
 
 ### JPQL
 SQL을 추상화한 객체 지향 쿼리언어.
