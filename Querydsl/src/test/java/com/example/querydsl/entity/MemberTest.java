@@ -41,10 +41,11 @@ class MemberTest {
 
         List<Member> resultList = em.createQuery("select  m from Member m", Member.class)
                 .getResultList();
-
-        for(Member member : resultList){
-            System.out.println("member : "+member);
-            System.out.println("member.team : "+member.getTeam());
-        }
+//
+//        for(Member member : resultList){
+//            System.out.println("member : "+member);
+//            System.out.println("member.team : "+member.getTeam());
+//        }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.querydsl.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 @ToString(of = {"id", "username", "age"})
 public class Member {
 
@@ -29,8 +31,9 @@ public class Member {
         }
     }
 
-    public Member() {
-
+    public Member(String username, int age) {
+        this.username = username;
+        this.age = age;
     }
 
 

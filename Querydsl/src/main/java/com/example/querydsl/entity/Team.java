@@ -1,6 +1,7 @@
 package com.example.querydsl.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
 @ToString(of = {"name"})
 public class Team {
 
@@ -20,9 +22,6 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
 
-    public Team(){
-
-    }
 
     public Team(String name){
         this.name = name;
