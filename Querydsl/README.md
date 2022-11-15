@@ -1,4 +1,5 @@
 출처 [실전! Querydsl](https://www.inflearn.com/course/querydsl-%EC%8B%A4%EC%A0%84/dashboard)
+
 쿼리를 자바 코드로 작성
 - 코드 오류를 컴파일 과정에서 확인
 - 복잡한 쿼리 작성
@@ -112,6 +113,7 @@ public class QHello extends EntityPathBase<Hello> {
 1. Q-Type 활용
 - QMember m = new QMember("m");
 - QMember m = QMember.member;
+- Alias가 중복되면 안되는 경우 Qtype 생성
 
 => static import 활용 권장
 ```
@@ -172,7 +174,7 @@ Member findMember = queryFactory
   - 결과 없으면 : null
   - 둘 이상이면 : nonuniqueuresultException
 - fetchFirst() : limit(1).fetchOne()
-- ~~fetchResults() : 페이징 정보 포함~~ => deprecated
+- ~~fetchResults() : 페이징 정보 포함~~ => desprecated
 - ~~fetchCount() : count 쿼리로 변경해 count 수 조회~~ => desprecated
 
 ### 정렬
@@ -180,8 +182,9 @@ Member findMember = queryFactory
 ```
 List<Member> result = queryFactory
     .selectFrom(member)
-    .where(member.age.eq(100))              	                        .orderBy(member.username.asc().nullsLast(), member.age.desc()) // 이름 오름차순, null 마지막 / 나이 내림차순
-                .fetch();
+    .where(member.age.eq(100))              	                        
+    .orderBy(member.username.asc().nullsLast(), member.age.desc()) // 이름 오름차순, null 마지막 / 나이 내림차순
+     .fetch();
 ```
 
 
@@ -279,5 +282,228 @@ tuple : [Member(id=3, username=member1, age=20), Team(name=teamA)]
 tuple : [Member(id=4, username=member2, age=20), Team(name=teamA)]
 tuple : [Member(id=5, username=member3, age=100), null]
 tuple : [Member(id=6, username=member4, age=100), null]
+```
+
+#### 페치 조인
+
+- SQL에서 제공하는 기능은 아님
+- 조인을 활용해 연관된 엔터티를 가져옴
+- 성능 최적화에 사용
+
+```
+    @PersistenceUnit
+    EntityManagerFactory emf;
+
+    @Test
+    public void fetchJoinNo(){
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam()); // findMember.getTeam()이 이미 로딩된 엔터티인지
+        assertThat(loaded).isFalse();
+
+    }
+```
+
+```
+    select
+        member0_.member_id as member_i1_1_,
+        member0_.age as age2_1_,
+        member0_.team_id as team_id4_1_,
+        member0_.username as username3_1_ 
+    from
+        member member0_ 
+    where
+        member0_.username=?
+```
+
+
+
+fetchJoin 사용
+
+```
+    @Test
+    public void fetchJoinYes(){
+        em.flush();
+        em.clear();
+
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .join(member.team, team).fetchJoin()
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam()); // findMember.getTeam()이 이미 로딩된 엔터티인지
+        assertThat(loaded).isTrue();
+
+    }
+```
+
+```
+    select
+        member0_.member_id as member_i1_1_0_,
+        team1_.id as id1_2_1_,
+        member0_.age as age2_1_0_,
+        member0_.team_id as team_id4_1_0_,
+        member0_.username as username3_1_0_,
+        team1_.name as name2_2_1_ 
+    from
+        member member0_ 
+    inner join
+        team team1_ 
+            on member0_.team_id=team1_.id 
+    where
+        member0_.username=?
+```
+
+
+
+### 서브 쿼리
+
+```
+import com.querydsl.jpa.JPAExpressions;
+```
+
+
+
+```
+    @Test
+    public void subQuery(){
+        // 나이 가장 많은 회원 조회
+        QMember memberSub = new QMember("memberSub"); // subQuery의 alias와 겹치면 않되므로 생성
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(
+                        JPAExpressions
+                                .select(memberSub.age.max())
+                                .from(memberSub)
+                ))
+                .fetch();
+
+        assertThat(result).extracting("age")
+                .containsExactly(100, 100);
+    }
+```
+
+```
+    select
+        member0_.member_id as member_i1_1_,
+        member0_.age as age2_1_,
+        member0_.team_id as team_id4_1_,
+        member0_.username as username3_1_ 
+    from
+        member member0_ 
+    where
+        member0_.age=(
+            select
+                max(member1_.age) 
+            from
+                member member1_
+        )
+```
+
+
+
+**JPA JPQL(Querydsl) 서브쿼리의 한계로 from절에서 서브쿼리 지원하지 않는다. 하이버네이트 구현체 사용하면 select절의 서**
+
+- 서브쿼리를 join으로
+- 쿼리를 2번 분리 실행
+- nativeSQL 사용
+
+
+
+### case
+
+- when
+- new CaseBuilder()
+
+
+
+**when**
+
+```
+    @Test
+    public void basicCase(){
+        List<String> result = queryFactory
+                .select(member.age
+                        .when(20).then("20살")
+                        .when(100).then("100살")
+                        .otherwise("기타")
+                )
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+    }
+```
+
+```
+20살
+20살
+100살
+100살
+```
+
+**CaseBuilder()**
+
+```
+    @Test
+    public void caseBuilder(){
+        List<String> result = queryFactory
+                .select(new CaseBuilder()
+                        .when(member.age.between(10, 20)).then("10~20살")
+                        .when(member.age.gt(20)).then("21살 이상")
+                        .otherwise("기타")
+                )
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+    }
+```
+
+```
+10~20살
+10~20살
+21살 이상
+21살 이상
+```
+
+
+
+### 문자열
+
+**concat**
+
+```
+    @Test
+    public void concat(){
+
+        List<String> result = queryFactory
+                .select(member.username.concat("_").concat(member.age.stringValue()))
+                .from(member)
+                .fetch();
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+    }
+```
+
+```
+member1_2
+member2_2
+member3_1
+member4_1
 ```
 
