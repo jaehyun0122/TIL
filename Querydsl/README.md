@@ -507,3 +507,282 @@ member3_1
 member4_1
 ```
 
+
+
+## 중급 문법
+
+### 프로젝션
+
+select구문에 작성
+
+- 프로젝션 하나
+
+  - 타입을 명확히 지정 가능
+
+    ```
+     @Test
+        public void simpleProjection(){
+            List<String> result = queryFactory
+                    .select(member.username)
+                    .from(member)
+                    .fetch();
+    
+            for (String s : result) {
+                System.out.println(s);
+            }
+    ```
+
+    ```
+        select
+            member0_.username as col_0_0_ 
+        from
+            member member0_
+    ```
+
+    
+
+- 둘 이상
+
+  - 튜플이나 DTO로 조회
+  - 튜플은 querydsl에 종속적 타입이므로 repository안에서만 사용하고 DTO 사용 권장
+
+  ```
+      @Test
+      public void tupleProjection(){
+          List<Tuple> result = queryFactory
+                  .select(member.username, member.age)
+                  .from(member)
+                  .fetch();
+  
+          for (Tuple tuple : result) {
+              String username = tuple.get(member.username);
+              Integer age = tuple.get(member.age);
+              System.out.println("usernmae : "+username+" age : "+age);
+          }
+      }
+  ```
+
+  ```
+      select
+          member0_.username as col_0_0_,
+          member0_.age as col_1_0_ 
+      from
+          member member0_
+  ```
+
+
+
+### DTO 조회
+
+- JPQL
+
+  - new 명령 사용
+  - DTO package이름 다 적어야됨
+
+  ```
+  List<MemberDTO> result = em.createQuery("select new com.example.querydsl.dto.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                  .getResultList();
+  ```
+
+  
+
+- Querydsl 빈
+
+  - 프로퍼티
+
+    ```
+        @Test
+        public void findDtoBySetter(){
+            List<MemberDTO> result = queryFactory
+                    .select(Projections.bean(MemberDTO.class,
+                            member.username, member.age))
+                    .from(member)
+                    .fetch();
+        }
+    ```
+
+    
+
+  - 필드
+
+  ```
+      @Test
+      public void findDtoByField(){
+          List<MemberDTO> result = queryFactory
+                  .select(Projections.fields(MemberDTO.class, // getter setter 없어도 field에 데이터 입력
+                          member.username, member.age))
+                  .from(member)
+                  .fetch();
+      }
+  ```
+
+  
+
+  - 생성자
+
+```
+    @Test
+    public void findDtoByConstructor(){
+        List<MemberDTO> result = queryFactory
+                .select(Projections.constructor(MemberDTO.class,
+                        member.username, member.age))
+                .from(member)
+                .fetch();
+    }
+```
+
+
+
+### @QueryProjection
+
+DTO에 @QueryProjection
+
+```
+@Data
+public class MemberDTO {
+
+    private String username;
+    private int age;
+
+    public MemberDTO(){
+
+    }
+
+    @QueryProjection
+    public MemberDTO(String username, int age) {
+        this.username = username;
+        this.age = age;
+    }
+}
+```
+
+-> compileQuerydsl - Qtype생성
+
+```
+    @Test
+    public void findDtoQueryProjection(){
+        List<MemberDTO> result = queryFactory
+                .select(new QMemberDTO(member.username, member.age))
+                .from(member)
+                .fetch();
+```
+
+=> 생성자 방식과 비슷하지만 컴파일 과정에서 오류 발견 가능
+
+=> 생성자 방식은 런타임 오류
+
+### 동적 쿼리
+
+- BooleanBuilder
+- Where 다중 파라미터
+
+
+
+#### BooleanBuilder
+
+```
+    @Test
+    public void dynamicQuery_BooleanBuilder(){
+        String usernameParam = "member1";
+        Integer ageParam = 20;
+
+        List<Member> result = searchMember1(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember1(String usernameParam, Integer ageParam) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if(usernameParam != null){
+            builder.and(member.username.eq(usernameParam));
+        }
+        if(ageParam != null){
+            builder.and(member.age.eq(ageParam));
+        }
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
+        return result;
+    }
+```
+
+```
+    select
+        member0_.member_id as member_i1_1_,
+        member0_.age as age2_1_,
+        member0_.team_id as team_id4_1_,
+        member0_.username as username3_1_ 
+    from
+        member member0_ 
+    where
+        member0_.username=? 
+        and member0_.age=?
+```
+
+=> 파라미터에 null이 들어오면 조건에서 제외
+
+=> age가 null인 경우
+
+```
+    select
+        member0_.member_id as member_i1_1_,
+        member0_.age as age2_1_,
+        member0_.team_id as team_id4_1_,
+        member0_.username as username3_1_ 
+    from
+        member member0_ 
+    where
+        member0_.username=?
+```
+
+
+
+#### Where 다중 파라미터
+
+**코드 깔끔해진다**
+
+=> where 조건에 null이 들어오면 무시된다.
+
+=> 동적 쿼리
+
+```
+    @Test
+    public void dynamicQuery_Where(){
+        String usernameParam = "member1";
+        Integer ageParam = 20;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameParam, Integer ageParam) {
+        return queryFactory
+                .selectFrom(member)
+                .where(usernameEq(usernameParam), ageEq(ageParam)) // null param이 들어오면 무시
+                .fetch();
+    }
+
+    private Predicate ageEq(Integer ageParam) {
+        if(ageParam != null){
+            return member.age.eq(ageParam);
+        }
+        return null;
+    }
+
+    private Predicate usernameEq(String usernameParam) {
+        if(usernameParam != null){
+            return member.username.eq(usernameParam);
+        }
+        return null;
+    }
+```
+
+=> 메소드로 작성되기 때문에 조립 가능
+
+```
+private BooleanExpression allEq(String usernameParam, Integer ageParam){
+        return usernameEq(usernameParam).and(ageEq(ageParam));
+    }
+```
+
