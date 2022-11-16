@@ -13,46 +13,82 @@ dependency에 다음과 같이 추가
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}"
     implementation "com.querydsl:querydsl-apt:${querydslVersion}"
 
+```
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '2.6.13'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	//querydsl 추가
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+	id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+	//querydsl 추가
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+	// query ? 확인 편리
+	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+//querydsl build 관련 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+//querydsl 추가 끝
+
+```
+
+
+
 
 Qfile 생성
-```
-package com.example.querydsl.entity;
 
-import static com.querydsl.core.types.PathMetadataFactory.*;
+=> gradle => Tasks => other => compileQuerydsl
 
-import com.querydsl.core.types.dsl.*;
+![image-20221116220912968](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221116220912968.png)
 
-import com.querydsl.core.types.PathMetadata;
-import javax.annotation.processing.Generated;
-import com.querydsl.core.types.Path;
-
-
-/**
- * QHello is a Querydsl query type for Hello
- */
-@Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QHello extends EntityPathBase<Hello> {
-
-    private static final long serialVersionUID = -932168945L;
-
-    public static final QHello hello = new QHello("hello");
-
-    public final NumberPath<Long> Id = createNumber("Id", Long.class);
-
-    public QHello(String variable) {
-        super(Hello.class, forVariable(variable));
-    }
-
-    public QHello(Path<? extends Hello> path) {
-        super(path.getType(), path.getMetadata());
-    }
-
-    public QHello(PathMetadata metadata) {
-        super(Hello.class, metadata);
-    }
-
-}
-```
+**build -> generated에 Qfile 생성**
 
 # Querydsl vs JPQL
 
@@ -365,11 +401,11 @@ fetchJoin 사용
 
 ### 서브 쿼리
 
+**JPAExpressions 사용**
+
 ```
 import com.querydsl.jpa.JPAExpressions;
 ```
-
-
 
 ```
     @Test
@@ -656,7 +692,7 @@ public class MemberDTO {
 }
 ```
 
--> compileQuerydsl - Qtype생성
+-> **compileQuerydsl - Qtype생성**
 
 ```
     @Test
@@ -675,8 +711,6 @@ public class MemberDTO {
 
 - BooleanBuilder
 - Where 다중 파라미터
-
-
 
 #### BooleanBuilder
 
@@ -783,6 +817,152 @@ public class MemberDTO {
 ```
 private BooleanExpression allEq(String usernameParam, Integer ageParam){
         return usernameEq(usernameParam).and(ageEq(ageParam));
+    }
+```
+
+
+
+## Spring Data Jpa & Querydsl
+
+![image-20221116224607556](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221116224607556.png)
+
+1. MemberRepo interface에 JpaRepository & MemberRepoCustom 상속
+
+MemberRepo
+
+```
+public interface MemberRepo extends JpaRepository<Member, Long>, MemberRepoCustom {
+    List<Member> findByUsername(String username);
+}
+```
+
+MemberRepoCustom
+
+```
+public interface MemberRepoCustom {
+    List<MemberTeamDto> search(MemberSearchCondition condition);
+}MemberRepo 구현체를 만들어 코드 작성
+```
+
+2. MemberRepoCustom 구현체를 만들어 코드 작성
+
+```
+public class MemberRepoImpl implements MemberRepoCustom{
+    
+    private final JPQLQueryFactory queryFactory;
+
+    public MemberRepoImpl(EntityManager em) {
+        this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    @Override
+    public List<MemberTeamDto> search(MemberSearchCondition condition){
+        return queryFactory
+                .select(new QMemberTeamDto(
+                        member.id.as("memberId"),
+                        member.username,
+                        member.age,
+                        team.id.as("teamId"),
+                        team.name.as("teamName")
+                ))
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()))
+                .fetch();
+    }
+
+    private Predicate ageLoe(Integer ageLoe) {
+        return ageLoe != null ? member.age.loe(ageLoe) : null;
+    }
+
+    private Predicate ageGoe(Integer ageGoe) {
+        return ageGoe != null ? member.age.goe(ageGoe) : null;
+    }
+
+    private Predicate teamNameEq(String teamName) {
+        return hasText(teamName) ? team.name.eq(teamName) : null;
+    }
+
+    private Predicate usernameEq(String username) {
+        return hasText(username) ?  member.username.eq(username) : null;
+    }
+    
+}
+```
+
+### Spring Data Paging
+
+- Page, Pageable 활용
+
+```
+public interface MemberRepoCustom {
+    List<MemberTeamDto> search(MemberSearchCondition condition);
+    Page<MemberTeamDto> searchPageSimple(MemberSearchCondition condition, Pageable pageable);
+    Page<MemberTeamDto> searchPageComplex(MemberSearchCondition condition, Pageable pageable);
+}
+```
+
+구현체
+
+```
+    @Override
+    public Page<MemberTeamDto> searchPageSimple(MemberSearchCondition condition, Pageable pageable) {
+        QueryResults<MemberTeamDto> results = queryFactory
+                .select(new QMemberTeamDto(
+                        member.id.as("memberId"),
+                        member.username,
+                        member.age,
+                        team.id.as("teamId"),
+                        team.name.as("teamName")
+                ))
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<MemberTeamDto> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+```
+
+**Test**
+
+PageRequest를 파라미터로 넘겨주면 된다.
+
+```
+    @Test
+    public void searchSimpleTest(){
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member member1 = new Member("member1", 20, teamA);
+        Member member2 = new Member("member2", 20, teamA);
+        Member member3 = new Member("member3", 50, teamB);
+        Member member4 = new Member("member4", 100, teamB);
+
+        em.persist(member1);
+        em.persist(member2);
+        em.persist(member3);
+        em.persist(member4);
+
+        MemberSearchCondition condition = new MemberSearchCondition();
+        PageRequest pageRequest = PageRequest.of(0, 3);
+
+        Page<MemberTeamDto> result1 = memberRepo.searchPageSimple(condition, pageRequest);
+        assertThat(result1.getSize()).isEqualTo(3);
+        assertThat(result1.getContent()).extracting("username").containsExactly("member1", "member2", "member3");
     }
 ```
 
