@@ -966,3 +966,41 @@ PageRequest를 파라미터로 넘겨주면 된다.
     }
 ```
 
+### Count 쿼리
+
+count 쿼리 생각 가능한 경우 -> count 쿼리를 생략해 성능 향상
+
+- 페이지 시작이면서 컨텐츠 사이즈가 페이지 사이즈 보다 작을 때 (한 페이지에 50개 보여주는데 데이터가 50개 미만인 경우)
+- 마지막 페이지 (offet+컨텐츠 사이즈를 더해 구함)
+
+기존 코드
+
+```
+long total = queryFactory
+                .select(member)
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()))
+                        .fetchCount();
+                        
+return new PageImpl<>(content, pageable, total);                        
+```
+
+변경
+
+```
+JPQLQuery<Member> countQuery = queryFactory
+                .select(member)
+                .from(member)
+                .leftJoin(member.team, team)
+                .where(usernameEq(condition.getUsername()),
+                        teamNameEq(condition.getTeamName()),
+                        ageGoe(condition.getAgeGoe()),
+                        ageLoe(condition.getAgeLoe()));
+                        
+return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+```
+
