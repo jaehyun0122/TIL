@@ -86,7 +86,7 @@ Qfile 생성
 
 => gradle => Tasks => other => compileQuerydsl
 
-![image-20221116220912968](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221116220912968.png)
+![image-20221116220912968](https://github.com/jaehyun0122/TIL/blob/master/Querydsl/asset/compileQuerydsl.png)
 
 **build -> generated에 Qfile 생성**
 
@@ -824,7 +824,7 @@ private BooleanExpression allEq(String usernameParam, Integer ageParam){
 
 ## Spring Data Jpa & Querydsl
 
-![image-20221116224607556](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221116224607556.png)
+![image-20221116224607556](https://github.com/jaehyun0122/TIL/blob/master/Querydsl/asset/extends.png)
 
 1. MemberRepo interface에 JpaRepository & MemberRepoCustom 상속
 
