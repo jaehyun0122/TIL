@@ -3,7 +3,13 @@ export default {
   data() {
     return {
       firstName: 'John',
-      lastName: 'Doe'
+      lastName: 'Doe',
+      canSee: false,
+      myObject: {
+        title: 'How to do lists in Vue',
+        author: 'Jane Doe',
+        publishedAt: '2016-04-10'
+      }
     }
   },
   computed: {
@@ -24,11 +30,23 @@ export default {
 </script>
 
 <template>
-	<h2>
-    {{this.fullName = 'jaehyun jeong'}}
-  </h2>
-  <h2>
-    {{this.fullName}}
-  </h2>
+    <h2>
+        {{this.fullName = 'jaehyun jeong'}}
+    </h2>
+    <h2>
+        {{this.fullName}}
+    </h2>
+
+    <button @click="canSee = !canSee">Toggle</button>
+    <h1 v-if="canSee">True</h1>
+    <h1 v-else>False</h1>
+
+    <h1>v-for</h1>
+    <ul>
+        <li v-for="(value, key) in myObject" v-bind:key="value">
+            {{key}}: {{value}}
+        </li>
+    </ul>
+
 
 </template>
