@@ -122,4 +122,4 @@ export default {
 
 ### 결과 화면
 
-![image-20221122030708168](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122030708168.png)
+![image-20221122030708168](https://github.com/jaehyun0122/TIL/blob/master/VuePractice/asset/vue%EC%8B%A4%ED%96%89%ED%99%94%EB%A9%B4.png)
