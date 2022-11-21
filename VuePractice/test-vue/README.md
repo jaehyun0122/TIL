@@ -138,9 +138,9 @@ export default {
     }
 ```
 
-![image-20221122032507729](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122032507729.png)
+![image-20221122032507729](https://github.com/jaehyun0122/TIL/blob/master/VuePractice/asset/false.png)
 
-![image-20221122032515818](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122032515818.png)
+![image-20221122032515818](https://github.com/jaehyun0122/TIL/blob/master/VuePractice/asset/true.png)
 
 > 같은 목적으로 v-show도 존재
 >
@@ -174,7 +174,7 @@ v-for 사용시 key값을 지정해 줘야된다.
     }
 ```
 
-![image-20221122033732129](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122033732129.png)
+![image-20221122033732129](https://github.com/jaehyun0122/TIL/blob/master/VuePractice/asset/v-for.png)
 
 ## 라이프사이클
 
