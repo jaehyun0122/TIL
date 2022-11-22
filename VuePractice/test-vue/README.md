@@ -179,3 +179,54 @@ v-for 사용시 key값을 지정해 줘야된다.
 ## 라이프사이클
 
 [Vue라이프사이클](https://vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram)
+
+
+
+## 상태관리
+
+> 전역으로 관리할 데이터를 Store를 통해 관리 할 수 있다.
+
+1. store.js 파일 생성
+
+   ```
+   import { reactive } from 'vue'
+   
+   export const store = reactive({
+       name: "jaehyun"
+   })
+   ```
+
+2. 컴포넌트
+
+   ```
+   <script>
+       import { store } from '../store/store.js'
+   
+       export default {
+           data(){
+               return {
+                   store
+               }
+           }
+       }
+   </script>
+   
+   <template>
+       <div>
+           <h2>{{ store.name }}</h2>
+           <h2>test</h2>
+       </div>
+   </template>
+   
+   <style lang="scss" scoped>
+   
+   </style>
+   ```
+
+3. 결과 화면
+
+   store에 저장된 이름이 보여짐
+
+   함수도 가능
+
+![image-20221122150059787](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122150059787.png)

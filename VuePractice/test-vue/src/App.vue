@@ -1,20 +1,13 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
-  <Count />
-  <Calulate />
+  <StoreTest />
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import Count from './components/count.vue'
-import Calulate from './components/calulAttribute.vue'
+import StoreTest from './components/storeTest.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-    Count,
-    Calulate
+    StoreTest,
   },
 }
 </script>

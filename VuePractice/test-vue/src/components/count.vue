@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: 'Count',
   data() {
     return {
       firstName: 'John',
