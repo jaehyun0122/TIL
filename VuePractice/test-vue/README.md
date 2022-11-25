@@ -229,4 +229,4 @@ v-for 사용시 key값을 지정해 줘야된다.
 
    함수도 가능
 
-![image-20221122150059787](C:\Users\jaehyun\AppData\Roaming\Typora\typora-user-images\image-20221122150059787.png)
+![image-20221122150059787](https://github.com/jaehyun0122/TIL/blob/master/VuePractice/asset/storeTest.png)
