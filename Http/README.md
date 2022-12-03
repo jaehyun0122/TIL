@@ -26,7 +26,7 @@
 
 2) TCP/UDP
 
-   ![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/%EC%9D%B8%ED%84%B0%EB%84%B7%ED%94%84%EB%A1%9C%ED%86%A0%EC%BD%9C%EA%B3%84%EC%B8%B5.png) 인터넷프로토콜계층
+   ![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/%EC%9D%B8%ED%84%B0%EB%84%B7%ED%94%84%EB%A1%9C%ED%86%A0%EC%BD%9C%EA%B3%84%EC%B8%B5.png) 
 
    1. TCP
 
@@ -41,31 +41,42 @@
          - 순서 보장 => 수신측에서 패킷 순서가 잘 못되면 그 부분부터 재전송 요청
          - 신뢰/대부분 TCP 사용
 
-![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/3wayhandshake.png) 3way
+![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/3wayhandshake.png) 
 
-		2. UDP
+2. UDP
 
-     1. 특징
+    1. 특징
 
-        IP + PORT + checksum
+       IP + PORT + checksum
 
-        단순하고 빠름
+       단순하고 빠름
 
-        연결지향 X, 순서 보장 X, 데이터 전달 보증 X
+       연결지향 X, 순서 보장 X, 데이터 전달 보증 X
 
-		3. PORT
+3. PORT
 
-     한번에 둘 이상 연결할 경우(게임, 영상 스트리밍,...)
+​	 한번에 둘 이상 연결할 경우(게임, 영상 스트리밍,...)
 
-     같은 IP 내에서 프로세스 구분(locahost:8080, localhost:3000 등)
+ 	같은 IP 내에서 프로세스 구분(locahost:8080, localhost:3000 등)
+ 	
+ 	0~65535 할당 가능
+ 	
+ 	0~1023: Well Known port, 권장하지 않음
 
-     0~65535 할당 가능
+4. DNS
 
-     0~1023: Well Known port, 권장하지 않음
+    도메인 명을 IP 주소로 변환
 
-		4. DNS
+   ![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/DNS.png) 
+   
+5. URL(Uniform Resource Identifier)
 
-     도메인 명을 IP 주소로 변환
+   URL URI URN ?
 
-![](https://github.com/jaehyun0122/TIL/blob/master/Http/asset/DNS.png) dns
+   - URI : Rescource Identifier에 URL, URN이 포함되 있다.
+     - URL : Rescource Locator ex) https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=testschema://[userinfo@]host[:port] [/path] [?query] [#fragement]
+     - URN: Resource Name
 
+6. 웹 브라우저 흐름
+
+   
