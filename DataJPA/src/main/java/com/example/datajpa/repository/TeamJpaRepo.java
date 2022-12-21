@@ -1,6 +1,5 @@
 package com.example.datajpa.repository;
 
-import com.example.datajpa.entity.Member;
 import com.example.datajpa.entity.Team;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TeamRepo {
+public class TeamJpaRepo {
 
     @PersistenceContext
     private EntityManager em;
