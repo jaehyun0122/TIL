@@ -220,3 +220,101 @@ class Korean : Student(){
 
 }
 ````
+
+## 10. Lamda
+val(var) Name : Type = {argumentList -> codeBody}
+````
+            inputType outputType
+val square : (Int) -> (Int) = {
+    number -> number*number
+}
+````
+- 확장함수
+````
+fun main(){
+    val a = "Mark"
+    println(a.doSomething()) // Mark doSomething
+}
+
+val doSomething : String.() -> String = {
+   // this는 확장함수를 호출하는 객체
+    this+" doSomething"
+}
+````
+- 람다 리턴
+````
+val calcGrade : (Int) -> String = {
+    // input매개변수가 하나이면 it으로 사용할 수 있다.
+    when(it){
+        in 0..30 -> "c"
+        in 31..60 -> "B"
+        in 61..90 -> "A"
+        in 91..100 -> "S"
+        // String이 반환타입이기 때문에
+        // else 없으면 컴파일 에러
+        else -> "Error"
+    }
+}
+````
+- 람다 활용
+````
+fun main(){
+   val lamda : (Double) -> Boolean = {
+           number : Double -> number == 3.14
+       }
+       println(invokeLamda(lamda))
+       println(invokeLamda({it > 4}))
+       // 매개변수가 하나일 떄는 중괄호 생략가능
+       println(invokeLamda { it > 4 })
+ }
+ 
+ fun invokeLamda(lamda : (Double) -> Boolean): Boolean {
+    return lamda(3.14)
+}
+````
+
+## 11. DataClass
+toString, hashCOde, equals, copy => 컴파일시 만들어진다.
+
+````
+data class Ticket(val name : String, val destination : String, val date : String)
+class TicketNormal(val name : String, val destination : String, val date : String)
+
+fun main(){
+    val ticketA = Ticket("Mark", "HongKong", "2023-02-13 ")
+    val ticketB = TicketNormal("Mark", "HongKong", "2023-02-13 ")
+   
+   // toString이 생성되므로 ticketA는 데이터 
+   // ticketB는 주소값
+    println(ticketA) // Ticket(name=Mark, destination=HongKong, date=2023-02-13 )
+    println(ticketB) // TicketNomal@17c68925
+}
+````
+
+## 12. Companion Object
+자바의 static 기능.
+
+## 13. object
+Singleton Pattern. 프로그램 실행시 한번만 생성된다.
+````
+object CarFactory{
+    val cars = arrayListOf<Car>()
+    fun mkCar(power : Int) : Car{
+        val car = Car(power)
+        cars.add(car)
+        return car
+    }
+}
+
+data class Car(val power: Int)
+
+fun main(){
+
+    val car1 = CarFactory.mkCar(10)
+    val car2 = CarFactory.mkCar(20)
+
+    println(CarFactory.cars.size)
+    println(car1)
+    println(car2)
+}
+````
