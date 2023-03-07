@@ -7,9 +7,9 @@
 - 2개 이상의 데이터가 props로 하위 컴포넌트로 전달될 때 변경하지 않는 값도 실행된다.
 => 이런 문제를 해결할 수 있는 React Hook
 
-### 1. useEffect 사용하지 않을 경우
+### 1. useMemo 사용하지 않을 경우
 color의 값만 변경해도 color, phone의 변경함수가 호출된다.
 ![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/beforeMemo.jpg)
-### 2. useEffect 사용
+### 2. useMemo 사용
 변경 값만의 함수가 실행.
 ![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/afterMemo.jpg)
