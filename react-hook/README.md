@@ -9,6 +9,7 @@
 
 ### 1. useEffect 사용하지 않을 경우
 color의 값만 변경해도 color, phone의 변경함수가 호출된다.
-
+![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/beforeMemo.jpg)
 ### 2. useEffect 사용
 변경 값만의 함수가 실행.
+![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/afterMemo.jpg)
