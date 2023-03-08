@@ -33,4 +33,6 @@ const refValue = useRef("");
             ...
         </>
 ```
+전송시 유지된 상태값을 가져올 수 있다.
+
 ![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/useRef.jpg)
