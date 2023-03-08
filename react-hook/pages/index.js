@@ -1,4 +1,5 @@
 import Memo from "../pages/useMemo"
+import UseRef from "../pages/useRef"
 import { useState } from 'react'
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
         onChange={changePhone}
       ></input><label>phone</label>
       <Memo color={color} phone={phone} />
+      <UseRef />
     </>
   )
 }

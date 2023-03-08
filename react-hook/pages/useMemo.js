@@ -25,6 +25,7 @@ export default function Memo(props) {
 
     return (
         <>
+            <h2>useMemo</h2>
             <div>props color :
                 {props.color}
             </div>

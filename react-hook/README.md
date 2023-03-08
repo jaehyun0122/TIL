@@ -13,3 +13,24 @@ color의 값만 변경해도 color, phone의 변경함수가 호출된다.
 ### 2. useMemo 사용
 변경 값만의 함수가 실행.
 ![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/afterMemo.jpg)
+
+## useRef
+- 형태
+```
+const refValue = useRef(initialValue)
+```
+- .current 프로퍼티에 변경 가능한 값을 담고있다.
+- useState는 변경값을 실시간으로 보여지지만 useRef는 변경 상태 유지하고 특정 작업에 데이터 처리 할 떄 사용
+예) form data 전송시
+```
+        ...
+const refValue = useRef("");
+        ...
+        <>
+            ...
+            <input ref={refValue} type="text"></input>
+            <button onClick={refChange}>전송</button>
+            ...
+        </>
+```
+![](https://github.com/jaehyun0122/TIL/blob/master/react-hook/asset/useRef.jpg)
